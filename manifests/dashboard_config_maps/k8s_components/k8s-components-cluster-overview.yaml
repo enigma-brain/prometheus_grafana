@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: monitoring
   name: k8s-components-cluster-overview
+  namespace: monitoring
   labels:
     app: k8s-components-cluster-overview
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
   annotations:
-    grafana_folder: "k8s_components"
+    grafana_folder: k8s_components
 data:
-  dashboard1.json: |-
+  k8s-components-cluster-overview.json: |-
     {
       "annotations": {
         "list": [

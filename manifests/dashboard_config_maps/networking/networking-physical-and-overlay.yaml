@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: networking-physical-and-overlay
   namespace: monitoring
-  name: networking-physical-and-overlay 
   labels:
     app: networking-physical-and-overlay
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
   annotations:
-    grafana_folder: "Networking"
-data: 
-  dashboard1.json: |-
+    grafana_folder: Networking
+data:
+  networking-physical-and-overlay.json: |-
     {
     "annotations": {
       "list": [

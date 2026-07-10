@@ -1,1242 +1,1242 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: monitoring
   name: k8s-components-proxy
+  namespace: monitoring
   labels:
     app: k8s-components-proxy
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
   annotations:
-    grafana_folder: "k8s_components"
+    grafana_folder: k8s_components
 data:
-  dashboard1.json: |-
+  k8s-components-proxy.json: |-
     {
-      "annotations": {
-        "list": [
-          {
-            "builtIn": 1,
-            "datasource": {
-              "type": "grafana",
-              "uid": "-- Grafana --"
-            },
-            "enable": true,
-            "hide": true,
-            "iconColor": "rgba(0, 211, 255, 1)",
-            "name": "Annotations & Alerts",
-            "type": "dashboard"
-          }
-        ]
-      },
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": 474,
-      "links": [
-        {
-          "asDropdown": true,
-          "includeVars": true,
-          "keepTime": true,
-          "tags": [
-            "kubernetes-mixin"
-          ],
-          "targetBlank": false,
-          "title": "Kubernetes",
-          "type": "dashboards"
-        }
-      ],
-      "panels": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Shows the number of kube-proxy instances that are currently running and reachable. Should match the number of nodes in your cluster.",
-          "fieldConfig": {
-            "defaults": {
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 4,
-            "x": 0,
-            "y": 0
-          },
-          "id": 1,
-          "interval": "1m",
-          "options": {
-            "colorMode": "none",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "percentChangeColorMode": "standard",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(up{cluster=\"$cluster\", job=\"kube-proxy\"})",
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Up",
-          "transparent": true,
-          "type": "stat"
+     "annotations": {
+      "list": [
+       {
+        "builtIn": 1,
+        "datasource": {
+         "type": "grafana",
+         "uid": "-- Grafana --"
         },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Displays how frequently kube-proxy is syncing iptables rules (operations per second). Higher rates indicate more frequent changes to Services/Endpoints in your cluster.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 10,
-            "x": 4,
-            "y": 0
-          },
-          "id": 2,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(kubeproxy_sync_proxy_rules_duration_seconds_count{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval]))",
-              "legendFormat": "rate",
-              "refId": "A"
-            }
-          ],
-          "title": "Rules Sync Rate",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Shows the worst-case time (99th percentile) it takes kube-proxy to update iptables rules. High values indicate potential networking delays when services change.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "s"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 10,
-            "x": 14,
-            "y": 0
-          },
-          "id": 3,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(0.99,rate(kubeproxy_sync_proxy_rules_duration_seconds_count{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval]))",
-              "legendFormat": "{{pod}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Rules Sync Latency 99th Quantile",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Measures how often kube-proxy completes the full network programming cycle (from detecting changes to applying them). Similar to rules sync but includes the complete workflow.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 7
-          },
-          "id": 4,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(kubeproxy_network_programming_duration_seconds_count{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval]))",
-              "legendFormat": "rate",
-              "refId": "A"
-            }
-          ],
-          "title": "Network Programming Rate",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Shows the 99th percentile latency for the complete network programming operation. This is the end-to-end time from detecting a service change to making it active in iptables.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "s"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 7
-          },
-          "id": 5,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(0.99, sum(rate(kubeproxy_network_programming_duration_seconds_bucket{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval])) by (instance, le))",
-              "legendFormat": "{{pod}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Network Programming Latency 99th Quantile",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Tracks how many requests kube-proxy makes to the Kubernetes API server, broken down by HTTP status code (2xx success, 4xx client errors, 5xx server errors).",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 8,
-            "x": 0,
-            "y": 14
-          },
-          "id": 6,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"2..\"}[$__rate_interval]))",
-              "legendFormat": "2xx",
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"3..\"}[$__rate_interval]))",
-              "legendFormat": "3xx",
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"4..\"}[$__rate_interval]))",
-              "legendFormat": "4xx",
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"5..\"}[$__rate_interval]))",
-              "legendFormat": "5xx",
-              "refId": "D"
-            }
-          ],
-          "title": "Kube API Request Rate",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Shows the 99th percentile latency for POST requests kube-proxy makes to the API server. High values may indicate API server performance issues.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 16,
-            "x": 8,
-            "y": 14
-          },
-          "id": 7,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "histogram_quantile(0.99, sum(rate(rest_client_request_duration_seconds_bucket{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\",verb=\"POST\"}[$__rate_interval])) by (verb, le))",
-              "legendFormat": "{{verb}}",
-              "refId": "A"
-            }
-          ],
-          "title": "Post Request Latency 99th Quantile",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "hows the 99th percentile latency for GET requests (typically watching for Service/Endpoint changes). High values suggest API server or network issues.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "s"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 21
-          },
-          "id": 8,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "histogram_quantile(0.99, sum(rate(rest_client_request_duration_seconds_bucket{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\", verb=\"GET\"}[$__rate_interval])) by (verb, le))",
-              "legendFormat": "{{verb}}",
-              "refId": "A"
-            }
-          ],
-          "title": "Get Request Latency 99th Quantile",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "\nDisplays the resident memory usage of each kube-proxy instance. Useful for capacity planning and detecting memory leaks.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bytes"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 8,
-            "x": 0,
-            "y": 28
-          },
-          "id": 9,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "process_resident_memory_bytes{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\"}",
-              "legendFormat": "{{pod}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Memory",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Shows CPU consumption rate for each kube-proxy instance. Spikes typically correlate with heavy iptables rule updates.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 8,
-            "x": 8,
-            "y": 28
-          },
-          "id": 10,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "rate(process_cpu_seconds_total{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": "{{pod}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "CPU usage",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Tracks the number of concurrent goroutines (lightweight threads) in each kube-proxy process. Steady growth could indicate goroutine leaks.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 8,
-            "x": 16,
-            "y": 28
-          },
-          "id": 11,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "go_goroutines{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\"}",
-              "legendFormat": "{{pod}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Goroutines",
-          "transparent": true,
-          "type": "timeseries"
-        }
-      ],
-      "preload": false,
-      "refresh": "10s",
-      "schemaVersion": 41,
-      "tags": [
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+       }
+      ]
+     },
+     "editable": true,
+     "fiscalYearStartMonth": 0,
+     "graphTooltip": 0,
+     "id": 474,
+     "links": [
+      {
+       "asDropdown": true,
+       "includeVars": true,
+       "keepTime": true,
+       "tags": [
         "kubernetes-mixin"
-      ],
-      "templating": {
-        "list": [
-          {
-            "current": {
-              "text": "default",
-              "value": "default"
-            },
-            "label": "Data source",
-            "name": "datasource",
-            "options": [],
-            "query": "prometheus",
-            "refresh": 1,
-            "regex": "",
-            "type": "datasource"
+       ],
+       "targetBlank": false,
+       "title": "Kubernetes",
+       "type": "dashboards"
+      }
+     ],
+     "panels": [
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Shows the number of kube-proxy instances that are currently running and reachable. Should match the number of nodes in your cluster.",
+       "fieldConfig": {
+        "defaults": {
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "none"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 0,
+        "y": 0
+       },
+       "id": 1,
+       "interval": "1m",
+       "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(up{cluster=\"$cluster\", job=\"kube-proxy\"})",
+         "instant": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Up",
+       "transparent": true,
+       "type": "stat"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Displays how frequently kube-proxy is syncing iptables rules (operations per second). Higher rates indicate more frequent changes to Services/Endpoints in your cluster.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
           },
-          {
-            "allValue": ".*",
-            "current": {
-              "text": "",
-              "value": ""
-            },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${datasource}"
-            },
-            "hide": 2,
-            "label": "cluster",
-            "name": "cluster",
-            "options": [],
-            "query": "label_values(up{job=\"kube-proxy\"}, cluster)",
-            "refresh": 2,
-            "sort": 1,
-            "type": "query"
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
           },
-          {
-            "allValue": ".+",
-            "current": {
-              "text": "All",
-              "value": "$__all"
-            },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${datasource}"
-            },
-            "includeAll": true,
-            "label": "instance",
-            "name": "instance",
-            "options": [],
-            "query": "label_values(up{job=\"kube-proxy\", cluster=\"$cluster\", job=\"kube-proxy\"}, instance)",
-            "refresh": 2,
-            "type": "query"
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
           }
-        ]
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "ops"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 4,
+        "y": 0
+       },
+       "id": 2,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(kubeproxy_sync_proxy_rules_duration_seconds_count{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval]))",
+         "legendFormat": "rate",
+         "refId": "A"
+        }
+       ],
+       "title": "Rules Sync Rate",
+       "transparent": true,
+       "type": "timeseries"
       },
-      "time": {
-        "from": "now-1h",
-        "to": "now"
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Shows the worst-case time (99th percentile) it takes kube-proxy to update iptables rules. High values indicate potential networking delays when services change.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "s"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 14,
+        "y": 0
+       },
+       "id": 3,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "histogram_quantile(0.99,rate(kubeproxy_sync_proxy_rules_duration_seconds_count{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval]))",
+         "legendFormat": "{{pod}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Rules Sync Latency 99th Quantile",
+       "transparent": true,
+       "type": "timeseries"
       },
-      "timepicker": {},
-      "timezone": "utc",
-      "title": "Proxy",
-      "uid": "k8s-components-proxy",
-      "version": 15
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Measures how often kube-proxy completes the full network programming cycle (from detecting changes to applying them). Similar to rules sync but includes the complete workflow.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "ops"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 7
+       },
+       "id": 4,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(kubeproxy_network_programming_duration_seconds_count{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval]))",
+         "legendFormat": "rate",
+         "refId": "A"
+        }
+       ],
+       "title": "Network Programming Rate",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Shows the 99th percentile latency for the complete network programming operation. This is the end-to-end time from detecting a service change to making it active in iptables.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "s"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 7
+       },
+       "id": 5,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "histogram_quantile(0.99, sum(rate(kubeproxy_network_programming_duration_seconds_bucket{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\"}[$__rate_interval])) by (instance, le))",
+         "legendFormat": "{{pod}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Network Programming Latency 99th Quantile",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Tracks how many requests kube-proxy makes to the Kubernetes API server, broken down by HTTP status code (2xx success, 4xx client errors, 5xx server errors).",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "ops"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 14
+       },
+       "id": 6,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"2..\"}[$__rate_interval]))",
+         "legendFormat": "2xx",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"3..\"}[$__rate_interval]))",
+         "legendFormat": "3xx",
+         "refId": "B"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"4..\"}[$__rate_interval]))",
+         "legendFormat": "4xx",
+         "refId": "C"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(rest_client_requests_total{cluster=\"$cluster\",job=\"kube-proxy\", instance=~\"$instance\",code=~\"5..\"}[$__rate_interval]))",
+         "legendFormat": "5xx",
+         "refId": "D"
+        }
+       ],
+       "title": "Kube API Request Rate",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Shows the 99th percentile latency for POST requests kube-proxy makes to the API server. High values may indicate API server performance issues.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "ops"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 8,
+        "y": 14
+       },
+       "id": 7,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "histogram_quantile(0.99, sum(rate(rest_client_request_duration_seconds_bucket{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\",verb=\"POST\"}[$__rate_interval])) by (verb, le))",
+         "legendFormat": "{{verb}}",
+         "refId": "A"
+        }
+       ],
+       "title": "Post Request Latency 99th Quantile",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "hows the 99th percentile latency for GET requests (typically watching for Service/Endpoint changes). High values suggest API server or network issues.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "s"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 21
+       },
+       "id": 8,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "histogram_quantile(0.99, sum(rate(rest_client_request_duration_seconds_bucket{cluster=\"$cluster\", job=\"kube-proxy\", instance=~\"$instance\", verb=\"GET\"}[$__rate_interval])) by (verb, le))",
+         "legendFormat": "{{verb}}",
+         "refId": "A"
+        }
+       ],
+       "title": "Get Request Latency 99th Quantile",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "\nDisplays the resident memory usage of each kube-proxy instance. Useful for capacity planning and detecting memory leaks.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "bytes"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 28
+       },
+       "id": 9,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "process_resident_memory_bytes{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\"}",
+         "legendFormat": "{{pod}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Memory",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Shows CPU consumption rate for each kube-proxy instance. Spikes typically correlate with heavy iptables rule updates.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "short"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 28
+       },
+       "id": 10,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "rate(process_cpu_seconds_total{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\"}[$__rate_interval])",
+         "legendFormat": "{{pod}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "CPU usage",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Tracks the number of concurrent goroutines (lightweight threads) in each kube-proxy process. Steady growth could indicate goroutine leaks.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "short"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 28
+       },
+       "id": 11,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "go_goroutines{cluster=\"$cluster\", job=\"kube-proxy\",instance=~\"$instance\"}",
+         "legendFormat": "{{pod}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Goroutines",
+       "transparent": true,
+       "type": "timeseries"
+      }
+     ],
+     "preload": false,
+     "refresh": "10s",
+     "schemaVersion": 41,
+     "tags": [
+      "kubernetes-mixin"
+     ],
+     "templating": {
+      "list": [
+       {
+        "current": {
+         "text": "Prometheus",
+         "value": "prometheus"
+        },
+        "label": "Data source",
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+       },
+       {
+        "allValue": ".*",
+        "current": {
+         "text": "",
+         "value": ""
+        },
+        "datasource": {
+         "type": "prometheus",
+         "uid": "${datasource}"
+        },
+        "hide": 2,
+        "label": "cluster",
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(up{job=\"kube-proxy\"}, cluster)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+       },
+       {
+        "allValue": ".+",
+        "current": {
+         "text": "All",
+         "value": "$__all"
+        },
+        "datasource": {
+         "type": "prometheus",
+         "uid": "${datasource}"
+        },
+        "includeAll": true,
+        "label": "instance",
+        "name": "instance",
+        "options": [],
+        "query": "label_values(up{job=\"kube-proxy\", cluster=\"$cluster\", job=\"kube-proxy\"}, instance)",
+        "refresh": 2,
+        "type": "query"
+       }
+      ]
+     },
+     "time": {
+      "from": "now-1h",
+      "to": "now"
+     },
+     "timepicker": {},
+     "timezone": "utc",
+     "title": "Proxy",
+     "uid": "k8s-components-proxy",
+     "version": 15
     }

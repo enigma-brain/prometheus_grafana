@@ -1,2889 +1,2889 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: monitoring
   name: pod-exhaustive-summary
+  namespace: monitoring
   labels:
     app: pod-exhaustive-summary
-    grafana_dashboard: "1"
+    grafana_dashboard: '1'
   annotations:
-    grafana_folder: "Pods"
-data: 
+    grafana_folder: Pods
+data:
   dashboard1.json: |-
     {
-      "annotations": {
-        "list": [
-          {
-            "builtIn": 1,
-            "datasource": {
-              "type": "grafana",
-              "uid": "-- Grafana --"
-            },
-            "enable": true,
-            "hide": true,
-            "iconColor": "rgba(0, 211, 255, 1)",
-            "name": "Annotations & Alerts",
-            "type": "dashboard"
-          }
-        ]
-      },
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": 472,
-      "links": [
-        {
-          "asDropdown": true,
-          "includeVars": true,
-          "keepTime": true,
-          "tags": [
-            "kubernetes-mixin"
-          ],
-          "targetBlank": false,
-          "title": "Kubernetes",
-          "type": "dashboards"
-        }
-      ],
-      "panels": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Displays CPU consumption in cores for each container over time, with dashed lines showing configured resource requests (guaranteed CPU) and limits (maximum allowed CPU). If usage consistently approaches or exceeds requests, consider increasing resource allocations; if it hits limits, the container may be throttled, degrading performance.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "B"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "fill": "dash"
-                    }
-                  },
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 2
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "red",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "C"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "fill": "dash"
-                    }
-                  },
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 2
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 24,
-            "x": 0,
-            "y": 0
-          },
-          "id": 1,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{\n    namespace=\"$namespace\", \n    pod=\"$pod\", \n    cluster=\"$cluster\", \n    container!=\"\",\n    job=\"kubelet\"\n}[30s]))",
-              "legendFormat": "{{container}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(\n    kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\"}\n)\n",
-              "legendFormat": "requests",
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(\n    kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\"}\n)\n",
-              "legendFormat": "limits",
-              "refId": "C"
-            }
-          ],
-          "title": "CPU Usage",
-          "transparent": true,
-          "type": "timeseries"
+     "annotations": {
+      "list": [
+       {
+        "builtIn": 1,
+        "datasource": {
+         "type": "grafana",
+         "uid": "-- Grafana --"
         },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Shows the fraction of CPU scheduling periods where containers were throttled (prevented from using CPU despite wanting to). High throttling (>25%) indicates containers are hitting CPU limits and experiencing performance degradation, even if overall CPU usage seems moderate. This is a critical metric for identifying performance issues caused by overly restrictive CPU limits.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "thresholds",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "axisSoftMax": 1,
-                "axisSoftMin": 0,
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "dashed+area"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "A"
-                },
-                "properties": [
-                  {
-                    "id": "thresholds",
-                    "value": {
-                      "mode": "absolute",
-                      "steps": [
-                        {
-                          "color": "green",
-                          "value": 0
-                        },
-                        {
-                          "color": "red",
-                          "value": 0.25
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "thresholds",
-                      "seriesBy": "lastNotNull"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 8
-          },
-          "id": 2,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "editorMode": "code",
-              "expr": "sum(increase(container_cpu_cfs_throttled_periods_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", cluster=\"$cluster\"}[$__rate_interval])) by (container) /sum(increase(container_cpu_cfs_periods_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", cluster=\"$cluster\"}[$__rate_interval])) by (container)",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "CPU Throttling",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "CPU usage + throttled seconds rate = approximate total CPU demand (what the container would use if unlimited)\n\nThe rate of throttled seconds can be thought of as the additional CPU cores needed to eliminate throttling.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 65,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "normal"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 8
-          },
-          "id": 24,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{\n    namespace=\"$namespace\", \n    pod=\"$pod\", \n    cluster=\"$cluster\", \n    container!=\"\",\n    job=\"kubelet\"\n}[1m]))",
-              "legendFormat": "{{container}} :: cpu usage seconds",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (container) (rate(container_cpu_cfs_throttled_seconds_total{\n    namespace=\"$namespace\", \n    pod=\"$pod\", \n    cluster=\"$cluster\", \n    container!=\"\",\n}[1m]))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "{{container}} :: cpu throttled seconds",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "CPU  usage vs throttled",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Tracks the number of running processes per container. For workloads using multiprocessing or parallel execution, drops may indicate crashes or resource exhaustion. Steady growth over time suggests process leaks that can eventually hit PID limits and prevent new processes from starting.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 3,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 15
-          },
-          "id": 19,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "list",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "container_processes{namespace=\"$namespace\", pod=\"$pod\", job=\"kubelet\", container!=\"\"}",
-              "legendFormat": "{{container}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Processes",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Monitors thread count per container, which impacts CPU scheduling efficiency. Unexpectedly high thread counts relative to available CPU cores (e.g., 10x more threads than cores) can cause performance degradation due to excessive context switching overhead, where the CPU spends more time managing threads than executing actual work.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 3,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 15
-          },
-          "id": 18,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "list",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "container_threads{namespace=\"$namespace\", pod=\"$pod\", job=\"kubelet\", container!=\"\"}",
-              "legendFormat": "{{container}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Threads",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Provides a snapshot comparison of current CPU usage against configured requests and limits. The percentage columns help identify if containers are over-provisioned (low utilization vs requests) or under-provisioned (high utilization vs limits). Use this to right-size resource allocations and improve cluster efficiency.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byRegexp",
-                  "options": "/%/"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "percentunit"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 24,
-            "x": 0,
-            "y": 22
-          },
-          "id": 3,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "D"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "E"
-            }
-          ],
-          "title": "CPU Quota",
-          "transformations": [
-            {
-              "id": "joinByField",
-              "options": {
-                "byField": "container",
-                "mode": "outer"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true,
-                  "Time 1": true,
-                  "Time 2": true,
-                  "Time 3": true,
-                  "Time 4": true,
-                  "Time 5": true
-                },
-                "indexByName": {
-                  "Time 1": 0,
-                  "Time 2": 1,
-                  "Time 3": 2,
-                  "Time 4": 3,
-                  "Time 5": 4,
-                  "Value #A": 6,
-                  "Value #B": 7,
-                  "Value #C": 8,
-                  "Value #D": 9,
-                  "Value #E": 10,
-                  "container": 5
-                },
-                "renameByName": {
-                  "Value #A": "CPU Usage",
-                  "Value #B": "CPU Requests",
-                  "Value #C": "CPU Requests %",
-                  "Value #D": "CPU Limits",
-                  "Value #E": "CPU Limits %",
-                  "container": "Container"
-                }
-              }
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": " Shows working set size (active memory in use) for each container, which is what Kubernetes uses for OOM decisions. When WSS approaches the memory limit, the container risks being killed by the OOM killer. Dashed lines indicate requests (guaranteed memory) and limits (maximum allowed), helping identify memory pressure before failures occur.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bytes"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "B"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "fill": "dash"
-                    }
-                  },
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 2
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "red",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "C"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "fill": "dash"
-                    }
-                  },
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 2
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 26
-          },
-          "id": 4,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", image!=\"\"}) by (container)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(\n    kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\"}\n)\n",
-              "legendFormat": "requests",
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(\n    kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\"}\n)\n",
-              "legendFormat": "limits",
-              "refId": "C"
-            }
-          ],
-          "title": "Memory Usage (WSS)",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Measures how often the container needs to fetch memory pages from disk rather than RAM, averaged over 1-minute windows. High rates indicate memory pressure, swapping activity, or accessing memory-mapped files. This severely degrades performance since disk access is orders of magnitude slower than RAM access.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 33
-          },
-          "id": 21,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "sum by (container, name)(\n  rate(container_memory_failures_total{\n    namespace=\"$namespace\",\n    pod=\"$pod\",\n    failure_type=\"pgmajfault\",\n    job=\"kubelet\",\n    container!=\"\"\n  }[1m])\n)",
-              "legendFormat": "{{container}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Major page faults per second",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": " Cumulative count of times the Linux OOM (out-of-memory) killer has been invoked for each container. Even one OOM event can cause job failures, data loss, or service disruptions. Any non-zero value likely requires increasing memory limits.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 5,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 40
-          },
-          "id": 20,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "sum by (container, name) (\n  container_oom_events_total{\n    namespace=\"$namespace\",\n    pod=\"$pod\",\n    job=\"kubelet\",\n    container!=\"\"\n  }\n)",
-              "legendFormat": "{{container}} :: {{name}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Total OOM events (WARNING: I DON\"T THINK THIS WORKS)",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Comprehensive memory breakdown showing working set size (used for OOM decisions), RSS (resident set size - actual physical memory), cache (file system cache that can be reclaimed), and swap (memory moved to disk). Compare usage against requests and limits to identify memory pressure, understand caching behavior, and detect swapping that impacts performance.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bytes"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byRegexp",
-                  "options": "/%/"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "percentunit"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 24,
-            "x": 0,
-            "y": 47
-          },
-          "id": 5,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", image!=\"\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", image!=\"\"}) by (container) / sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "D"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", image!=\"\"}) by (container) / sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "E"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_rss{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container != \"\", container != \"POD\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "F"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_cache{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container != \"\", container != \"POD\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "G"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(container_memory_swap{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container != \"\", container != \"POD\"}) by (container)",
-              "format": "table",
-              "instant": true,
-              "refId": "H"
-            }
-          ],
-          "title": "Memory Quota",
-          "transformations": [
-            {
-              "id": "joinByField",
-              "options": {
-                "byField": "container",
-                "mode": "outer"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true,
-                  "Time 1": true,
-                  "Time 2": true,
-                  "Time 3": true,
-                  "Time 4": true,
-                  "Time 5": true,
-                  "Time 6": true,
-                  "Time 7": true,
-                  "Time 8": true
-                },
-                "indexByName": {
-                  "Time 1": 0,
-                  "Time 2": 1,
-                  "Time 3": 2,
-                  "Time 4": 3,
-                  "Time 5": 4,
-                  "Time 6": 5,
-                  "Time 7": 6,
-                  "Time 8": 7,
-                  "Value #A": 9,
-                  "Value #B": 10,
-                  "Value #C": 11,
-                  "Value #D": 12,
-                  "Value #E": 13,
-                  "Value #F": 14,
-                  "Value #G": 15,
-                  "Value #H": 16,
-                  "container": 8
-                },
-                "renameByName": {
-                  "Value #A": "Memory Usage",
-                  "Value #B": "Memory Requests",
-                  "Value #C": "Memory Requests %",
-                  "Value #D": "Memory Limits",
-                  "Value #E": "Memory Limits %",
-                  "Value #F": "Memory Usage (RSS)",
-                  "Value #G": "Memory Usage (Cache)",
-                  "Value #H": "Memory Usage (Swap)",
-                  "container": "Container"
-                }
-              }
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Shows GPU compute utilization percentage (0-100%) for each GPU assigned to the pod. Low utilization may indicate CPU bottlenecks, inefficient code, or data transfer overhead between CPU and GPU. High sustained utilization confirms GPUs are being effectively used, though spiky patterns may suggest batch processing workloads.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 51
-          },
-          "id": 22,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "DCGM_FI_DEV_GPU_UTIL{\n  exported_namespace=\"$namespace\",\n  exported_pod=\"$pod\"\n}",
-              "legendFormat": "{{modelName}} :: {{Hostname}} :: gpu{{gpu}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "GPU Utilization",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": " Displays GPU memory (VRAM) usage as a fraction of total available memory per GPU. Running out of VRAM causes workloads to fail or fall back to slower system RAM, severely impacting performance. Unlike CPU memory, GPUs typically cannot swap to disk gracefully, making VRAM exhaustion a critical failure condition.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 58
-          },
-          "id": 23,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "max(DCGM_FI_DEV_FB_USED{exported_namespace=\"$namespace\",exported_pod=\"$pod\"}) by (modelName, Hostname, gpu) \n/ \n(max(DCGM_FI_DEV_FB_USED{exported_namespace=\"$namespace\",exported_pod=\"$pod\"}) by (modelName, Hostname, gpu)  + max(DCGM_FI_DEV_FB_FREE{exported_namespace=\"$namespace\",exported_pod=\"$pod\"}) by (modelName, Hostname, gpu))",
-              "legendFormat": "{{modelName}} :: {{Hostname}} :: gpu{{gpu}} ",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "VRAM utilization",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": " Network data received by the pod in bytes per second. Sustained high rates may indicate large data transfers, streaming workloads, or distributed computation communication. Compare against network interface limits (typically 1-100 Gbps depending on infrastructure) to identify network bottlenecks.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "Bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 65
-          },
-          "id": 6,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(irate(container_network_receive_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "Receive Bandwidth",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Network data sent by the pod in bytes per second. High transmit rates are common for services sending responses to many clients, distributed storage systems, or pods writing to network-attached storage. Asymmetric send/receive patterns help characterize workload behavior (e.g., download-heavy vs upload-heavy).",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "Bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 65
-          },
-          "id": 7,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(container_network_transmit_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "Transmit Bandwidth",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": " Incoming network packet rate, useful for understanding connection patterns and overhead. High packet rates with low bandwidth suggest many small messages, while low packet rates with high bandwidth indicate large transfers. Network hardware has packet-per-second limits independent of bandwidth.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "pps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 72
-          },
-          "id": 8,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(container_network_receive_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "Rate of Received Packets",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Outgoing network packet rate, complementing bandwidth metrics. Comparing packet rates to bandwidth helps identify packet size distribution and potential inefficiencies like excessive connection churn or fragmented messages that could be batched for better performance.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "pps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 72
-          },
-          "id": 9,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(container_network_transmit_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "Rate of Transmitted Packets",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Network packets dropped on receive, indicating congestion, buffer overflows, or network interface saturation. Any sustained drops suggest network capacity issues that will cause retransmissions, increased latency, and degraded application performance. Investigate network configuration, QoS policies, or pod resource contention.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "pps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 79
-          },
-          "id": 10,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(container_network_receive_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "Rate of Received Packets Dropped",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Packets dropped during transmission, signaling network path congestion or egress bandwidth saturation. For critical workloads, packet drops can cause connection timeouts, failed transactions, or degraded user experience. May indicate need for network policy adjustments or traffic shaping.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "pps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 79
-          },
-          "id": 11,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum(rate(container_network_transmit_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "Rate of Transmitted Packets Dropped",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Combined read and write I/O operations per second at the pod level, aggregated across all storage devices. High IOPS workloads (databases, random access patterns) stress storage differently than high-throughput workloads. Compare against storage system IOPS limits to identify bottlenecks.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "iops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 86
-          },
-          "id": 12,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "ceil(sum by(pod) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])))",
-              "legendFormat": "Reads",
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "ceil(sum by(pod) (rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\",namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])))",
-              "legendFormat": "Writes",
-              "refId": "B"
-            }
-          ],
-          "title": "IOPS (Pod)",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Total data transfer rate (bytes/second) for read and write operations combined. High throughput with low IOPS suggests sequential access patterns (like video processing or large file operations), while low throughput with high IOPS indicates random access (like databases). Use this to match workloads to appropriate storage types.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "Bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 86
-          },
-          "id": 13,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(pod) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
-              "legendFormat": "Reads",
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(pod) (rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
-              "legendFormat": "Writes",
-              "refId": "B"
-            }
-          ],
-          "title": "ThroughPut (Pod)",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": " I/O operations per second broken down by individual containers, helping identify which containers are driving storage load. Useful for multi-container pods where one container (like a logging sidecar) might dominate I/O, or for understanding how application containers and init containers differ in storage access patterns.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "iops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 93
-          },
-          "id": 14,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "ceil(sum by(container) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval])))",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "IOPS (Containers)",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Data transfer rates per container, revealing which containers are performing heavy data operations. Helps diagnose performance issues caused by storage contention between containers and informs decisions about volume sharing, storage class selection, or whether containers should be split across different pods.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "Bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 12,
-            "x": 12,
-            "y": 93
-          },
-          "id": 15,
-          "interval": "1m",
-          "options": {
-            "legend": {
-              "asTable": true,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "legendFormat": "__auto",
-              "refId": "A"
-            }
-          ],
-          "title": "ThroughPut (Containers)",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Instant snapshot of all storage metrics per container, showing read vs write patterns separately and combined. The breakdown helps distinguish read-heavy workloads (like serving static content) from write-heavy ones (like logging or checkpointing). Use this to verify storage is performing as expected and to validate storage provisioning decisions.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byRegexp",
-                  "options": "/IOPS/"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "iops"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byRegexp",
-                  "options": "/Throughput/"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "Bps"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 100
-          },
-          "id": 16,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "12.1.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "format": "table",
-              "instant": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\",device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "format": "table",
-              "instant": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "format": "table",
-              "instant": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "format": "table",
-              "instant": true,
-              "refId": "D"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "format": "table",
-              "instant": true,
-              "refId": "E"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by(container) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
-              "format": "table",
-              "instant": true,
-              "refId": "F"
-            }
-          ],
-          "title": "Current Storage IO",
-          "transformations": [
-            {
-              "id": "joinByField",
-              "options": {
-                "byField": "container",
-                "mode": "outer"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true,
-                  "Time 1": true,
-                  "Time 2": true,
-                  "Time 3": true,
-                  "Time 4": true,
-                  "Time 5": true,
-                  "Time 6": true
-                },
-                "indexByName": {
-                  "Time 1": 0,
-                  "Time 2": 1,
-                  "Time 3": 2,
-                  "Time 4": 3,
-                  "Time 5": 4,
-                  "Time 6": 5,
-                  "Value #A": 7,
-                  "Value #B": 8,
-                  "Value #C": 9,
-                  "Value #D": 10,
-                  "Value #E": 11,
-                  "Value #F": 12,
-                  "container": 6
-                },
-                "renameByName": {
-                  "Value #A": "IOPS(Reads)",
-                  "Value #B": "IOPS(Writes)",
-                  "Value #C": "IOPS(Reads + Writes)",
-                  "Value #D": "Throughput(Read)",
-                  "Value #E": "Throughput(Write)",
-                  "Value #F": "Throughput(Read + Write)",
-                  "container": "Container"
-                }
-              }
-            }
-          ],
-          "type": "table"
-        }
-      ],
-      "preload": false,
-      "refresh": "10s",
-      "schemaVersion": 41,
-      "tags": [
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+       }
+      ]
+     },
+     "editable": true,
+     "fiscalYearStartMonth": 0,
+     "graphTooltip": 0,
+     "id": 472,
+     "links": [
+      {
+       "asDropdown": true,
+       "includeVars": true,
+       "keepTime": true,
+       "tags": [
         "kubernetes-mixin"
-      ],
-      "templating": {
-        "list": [
-          {
-            "current": {
-              "text": "default",
-              "value": "default"
-            },
-            "label": "Data source",
-            "name": "datasource",
-            "options": [],
-            "query": "prometheus",
-            "refresh": 1,
-            "regex": "",
-            "type": "datasource"
+       ],
+       "targetBlank": false,
+       "title": "Kubernetes",
+       "type": "dashboards"
+      }
+     ],
+     "panels": [
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Displays CPU consumption in cores for each container over time, with dashed lines showing configured resource requests (guaranteed CPU) and limits (maximum allowed CPU). If usage consistently approaches or exceeds requests, consider increasing resource allocations; if it hits limits, the container may be throttled, degrading performance.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
           },
-          {
-            "allValue": ".*",
-            "current": {
-              "text": "",
-              "value": ""
-            },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${datasource}"
-            },
-            "hide": 2,
-            "label": "cluster",
-            "name": "cluster",
-            "options": [],
-            "query": "label_values(up{job=\"kube-state-metrics\"}, cluster)",
-            "refresh": 2,
-            "sort": 1,
-            "type": "query"
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
           },
-          {
-            "current": {
-              "text": "argocd",
-              "value": "argocd"
-            },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${datasource}"
-            },
-            "label": "namespace",
-            "name": "namespace",
-            "options": [],
-            "query": "label_values(kube_namespace_status_phase{job=\"kube-state-metrics\", cluster=\"$cluster\"}, namespace)",
-            "refresh": 2,
-            "sort": 1,
-            "type": "query"
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
           },
-          {
-            "current": {
-              "text": "argocd-application-controller-0",
-              "value": "argocd-application-controller-0"
-            },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${datasource}"
-            },
-            "label": "pod",
-            "name": "pod",
-            "options": [],
-            "query": "label_values(kube_pod_info{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\"}, pod)",
-            "refresh": 2,
-            "sort": 1,
-            "type": "query"
+          "thresholdsStyle": {
+           "mode": "off"
           }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byFrameRefID",
+           "options": "B"
+          },
+          "properties": [
+           {
+            "id": "custom.lineStyle",
+            "value": {
+             "fill": "dash"
+            }
+           },
+           {
+            "id": "custom.lineWidth",
+            "value": 2
+           },
+           {
+            "id": "color",
+            "value": {
+             "fixedColor": "red",
+             "mode": "fixed"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byFrameRefID",
+           "options": "C"
+          },
+          "properties": [
+           {
+            "id": "custom.lineStyle",
+            "value": {
+             "fill": "dash"
+            }
+           },
+           {
+            "id": "custom.lineWidth",
+            "value": 2
+           },
+           {
+            "id": "color",
+            "value": {
+             "fixedColor": "orange",
+             "mode": "fixed"
+            }
+           }
+          ]
+         }
         ]
+       },
+       "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+       },
+       "id": 1,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{\n    namespace=\"$namespace\", \n    pod=\"$pod\", \n    cluster=\"$cluster\", \n    container!=\"\",\n    job=\"kubelet\"\n}[30s]))",
+         "legendFormat": "{{container}}",
+         "range": true,
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(\n    kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\"}\n)\n",
+         "legendFormat": "requests",
+         "refId": "B"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(\n    kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\"}\n)\n",
+         "legendFormat": "limits",
+         "refId": "C"
+        }
+       ],
+       "title": "CPU Usage",
+       "transparent": true,
+       "type": "timeseries"
       },
-      "time": {
-        "from": "now-1h",
-        "to": "now"
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Shows the fraction of CPU scheduling periods where containers were throttled (prevented from using CPU despite wanting to). High throttling (>25%) indicates containers are hitting CPU limits and experiencing performance degradation, even if overall CPU usage seems moderate. This is a critical metric for identifying performance issues caused by overly restrictive CPU limits.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "thresholds",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "axisSoftMax": 1,
+          "axisSoftMin": 0,
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "dashed+area"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "percentunit"
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byFrameRefID",
+           "options": "A"
+          },
+          "properties": [
+           {
+            "id": "thresholds",
+            "value": {
+             "mode": "absolute",
+             "steps": [
+              {
+               "color": "green",
+               "value": 0
+              },
+              {
+               "color": "red",
+               "value": 0.25
+              }
+             ]
+            }
+           },
+           {
+            "id": "color",
+            "value": {
+             "mode": "thresholds",
+             "seriesBy": "lastNotNull"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 8
+       },
+       "id": 2,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "editorMode": "code",
+         "expr": "sum(increase(container_cpu_cfs_throttled_periods_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", cluster=\"$cluster\"}[$__rate_interval])) by (container) /sum(increase(container_cpu_cfs_periods_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", cluster=\"$cluster\"}[$__rate_interval])) by (container)",
+         "legendFormat": "__auto",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "CPU Throttling",
+       "transparent": true,
+       "type": "timeseries"
       },
-      "timepicker": {},
-      "timezone": "utc",
-      "title": "Exhaustive summary",
-      "uid": "pod-exhaustive-summary",
-      "version": 90
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": "CPU usage + throttled seconds rate = approximate total CPU demand (what the container would use if unlimited)\n\nThe rate of throttled seconds can be thought of as the additional CPU cores needed to eliminate throttling.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 65,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "normal"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 8
+       },
+       "id": 24,
+       "options": {
+        "legend": {
+         "calcs": [],
+         "displayMode": "list",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{\n    namespace=\"$namespace\", \n    pod=\"$pod\", \n    cluster=\"$cluster\", \n    container!=\"\",\n    job=\"kubelet\"\n}[1m]))",
+         "legendFormat": "{{container}} :: cpu usage seconds",
+         "range": true,
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+         },
+         "editorMode": "code",
+         "expr": "sum by (container) (rate(container_cpu_cfs_throttled_seconds_total{\n    namespace=\"$namespace\", \n    pod=\"$pod\", \n    cluster=\"$cluster\", \n    container!=\"\",\n}[1m]))",
+         "hide": false,
+         "instant": false,
+         "legendFormat": "{{container}} :: cpu throttled seconds",
+         "range": true,
+         "refId": "B"
+        }
+       ],
+       "title": "CPU  usage vs throttled",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": "Tracks the number of running processes per container. For workloads using multiprocessing or parallel execution, drops may indicate crashes or resource exhaustion. Steady growth over time suggests process leaks that can eventually hit PID limits and prevent new processes from starting.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 3,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 15
+       },
+       "id": 19,
+       "options": {
+        "legend": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "list",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "container_processes{namespace=\"$namespace\", pod=\"$pod\", job=\"kubelet\", container!=\"\"}",
+         "legendFormat": "{{container}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Processes",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": "Monitors thread count per container, which impacts CPU scheduling efficiency. Unexpectedly high thread counts relative to available CPU cores (e.g., 10x more threads than cores) can cause performance degradation due to excessive context switching overhead, where the CPU spends more time managing threads than executing actual work.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 3,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 15
+       },
+       "id": 18,
+       "options": {
+        "legend": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "list",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "container_threads{namespace=\"$namespace\", pod=\"$pod\", job=\"kubelet\", container!=\"\"}",
+         "legendFormat": "{{container}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Threads",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Provides a snapshot comparison of current CPU usage against configured requests and limits. The percentage columns help identify if containers are over-provisioned (low utilization vs requests) or under-provisioned (high utilization vs limits). Use this to right-size resource allocations and improve cluster efficiency.",
+       "fieldConfig": {
+        "defaults": {
+         "custom": {
+          "align": "auto",
+          "cellOptions": {
+           "type": "auto"
+          },
+          "inspect": false
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byRegexp",
+           "options": "/%/"
+          },
+          "properties": [
+           {
+            "id": "unit",
+            "value": "percentunit"
+           }
+          ]
+         }
+        ]
+       },
+       "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 22
+       },
+       "id": 3,
+       "options": {
+        "cellHeight": "sm",
+        "footer": {
+         "countRows": false,
+         "fields": "",
+         "reducer": [
+          "sum"
+         ],
+         "show": false
+        },
+        "showHeader": true
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "B"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "C"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "D"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "E"
+        }
+       ],
+       "title": "CPU Quota",
+       "transformations": [
+        {
+         "id": "joinByField",
+         "options": {
+          "byField": "container",
+          "mode": "outer"
+         }
+        },
+        {
+         "id": "organize",
+         "options": {
+          "excludeByName": {
+           "Time": true,
+           "Time 1": true,
+           "Time 2": true,
+           "Time 3": true,
+           "Time 4": true,
+           "Time 5": true
+          },
+          "indexByName": {
+           "Time 1": 0,
+           "Time 2": 1,
+           "Time 3": 2,
+           "Time 4": 3,
+           "Time 5": 4,
+           "Value #A": 6,
+           "Value #B": 7,
+           "Value #C": 8,
+           "Value #D": 9,
+           "Value #E": 10,
+           "container": 5
+          },
+          "renameByName": {
+           "Value #A": "CPU Usage",
+           "Value #B": "CPU Requests",
+           "Value #C": "CPU Requests %",
+           "Value #D": "CPU Limits",
+           "Value #E": "CPU Limits %",
+           "container": "Container"
+          }
+         }
+        }
+       ],
+       "type": "table"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": " Shows working set size (active memory in use) for each container, which is what Kubernetes uses for OOM decisions. When WSS approaches the memory limit, the container risks being killed by the OOM killer. Dashed lines indicate requests (guaranteed memory) and limits (maximum allowed), helping identify memory pressure before failures occur.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "bytes"
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byFrameRefID",
+           "options": "B"
+          },
+          "properties": [
+           {
+            "id": "custom.lineStyle",
+            "value": {
+             "fill": "dash"
+            }
+           },
+           {
+            "id": "custom.lineWidth",
+            "value": 2
+           },
+           {
+            "id": "color",
+            "value": {
+             "fixedColor": "red",
+             "mode": "fixed"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byFrameRefID",
+           "options": "C"
+          },
+          "properties": [
+           {
+            "id": "custom.lineStyle",
+            "value": {
+             "fill": "dash"
+            }
+           },
+           {
+            "id": "custom.lineWidth",
+            "value": 2
+           },
+           {
+            "id": "color",
+            "value": {
+             "fixedColor": "orange",
+             "mode": "fixed"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 26
+       },
+       "id": 4,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", image!=\"\"}) by (container)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(\n    kube_pod_container_resource_requests{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\"}\n)\n",
+         "legendFormat": "requests",
+         "refId": "B"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(\n    kube_pod_container_resource_limits{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\"}\n)\n",
+         "legendFormat": "limits",
+         "refId": "C"
+        }
+       ],
+       "title": "Memory Usage (WSS)",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": "Measures how often the container needs to fetch memory pages from disk rather than RAM, averaged over 1-minute windows. High rates indicate memory pressure, swapping activity, or accessing memory-mapped files. This severely degrades performance since disk access is orders of magnitude slower than RAM access.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 33
+       },
+       "id": 21,
+       "options": {
+        "legend": {
+         "calcs": [],
+         "displayMode": "list",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "sum by (container, name)(\n  rate(container_memory_failures_total{\n    namespace=\"$namespace\",\n    pod=\"$pod\",\n    failure_type=\"pgmajfault\",\n    job=\"kubelet\",\n    container!=\"\"\n  }[1m])\n)",
+         "legendFormat": "{{container}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Major page faults per second",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": " Cumulative count of times the Linux OOM (out-of-memory) killer has been invoked for each container. Even one OOM event can cause job failures, data loss, or service disruptions. Any non-zero value likely requires increasing memory limits.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 5,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 40
+       },
+       "id": 20,
+       "options": {
+        "legend": {
+         "calcs": [],
+         "displayMode": "list",
+         "placement": "bottom",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "sum by (container, name) (\n  container_oom_events_total{\n    namespace=\"$namespace\",\n    pod=\"$pod\",\n    job=\"kubelet\",\n    container!=\"\"\n  }\n)",
+         "legendFormat": "{{container}} :: {{name}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "Total OOM events (WARNING: I DON\"T THINK THIS WORKS)",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Comprehensive memory breakdown showing working set size (used for OOM decisions), RSS (resident set size - actual physical memory), cache (file system cache that can be reclaimed), and swap (memory moved to disk). Compare usage against requests and limits to identify memory pressure, understand caching behavior, and detect swapping that impacts performance.",
+       "fieldConfig": {
+        "defaults": {
+         "custom": {
+          "align": "auto",
+          "cellOptions": {
+           "type": "auto"
+          },
+          "inspect": false
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "bytes"
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byRegexp",
+           "options": "/%/"
+          },
+          "properties": [
+           {
+            "id": "unit",
+            "value": "percentunit"
+           }
+          ]
+         }
+        ]
+       },
+       "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 47
+       },
+       "id": 5,
+       "options": {
+        "cellHeight": "sm",
+        "footer": {
+         "countRows": false,
+         "fields": "",
+         "reducer": [
+          "sum"
+         ],
+         "show": false
+        },
+        "showHeader": true
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", image!=\"\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "B"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", image!=\"\"}) by (container) / sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "C"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "D"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_working_set_bytes{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container!=\"\", image!=\"\"}) by (container) / sum(cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "E"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_rss{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container != \"\", container != \"POD\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "F"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_cache{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container != \"\", container != \"POD\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "G"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(container_memory_swap{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\", container != \"\", container != \"POD\"}) by (container)",
+         "format": "table",
+         "instant": true,
+         "refId": "H"
+        }
+       ],
+       "title": "Memory Quota",
+       "transformations": [
+        {
+         "id": "joinByField",
+         "options": {
+          "byField": "container",
+          "mode": "outer"
+         }
+        },
+        {
+         "id": "organize",
+         "options": {
+          "excludeByName": {
+           "Time": true,
+           "Time 1": true,
+           "Time 2": true,
+           "Time 3": true,
+           "Time 4": true,
+           "Time 5": true,
+           "Time 6": true,
+           "Time 7": true,
+           "Time 8": true
+          },
+          "indexByName": {
+           "Time 1": 0,
+           "Time 2": 1,
+           "Time 3": 2,
+           "Time 4": 3,
+           "Time 5": 4,
+           "Time 6": 5,
+           "Time 7": 6,
+           "Time 8": 7,
+           "Value #A": 9,
+           "Value #B": 10,
+           "Value #C": 11,
+           "Value #D": 12,
+           "Value #E": 13,
+           "Value #F": 14,
+           "Value #G": 15,
+           "Value #H": 16,
+           "container": 8
+          },
+          "renameByName": {
+           "Value #A": "Memory Usage",
+           "Value #B": "Memory Requests",
+           "Value #C": "Memory Requests %",
+           "Value #D": "Memory Limits",
+           "Value #E": "Memory Limits %",
+           "Value #F": "Memory Usage (RSS)",
+           "Value #G": "Memory Usage (Cache)",
+           "Value #H": "Memory Usage (Swap)",
+           "container": "Container"
+          }
+         }
+        }
+       ],
+       "type": "table"
+      },
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": "Shows GPU compute utilization percentage (0-100%) for each GPU assigned to the pod. Low utilization may indicate CPU bottlenecks, inefficient code, or data transfer overhead between CPU and GPU. High sustained utilization confirms GPUs are being effectively used, though spiky patterns may suggest batch processing workloads.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 51
+       },
+       "id": 22,
+       "options": {
+        "legend": {
+         "calcs": [],
+         "displayMode": "list",
+         "placement": "bottom",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "DCGM_FI_DEV_GPU_UTIL{\n  exported_namespace=\"$namespace\",\n  exported_pod=\"$pod\"\n}",
+         "legendFormat": "{{modelName}} :: {{Hostname}} :: gpu{{gpu}}",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "GPU Utilization",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "description": " Displays GPU memory (VRAM) usage as a fraction of total available memory per GPU. Running out of VRAM causes workloads to fail or fall back to slower system RAM, severely impacting performance. Unlike CPU memory, GPUs typically cannot swap to disk gracefully, making VRAM exhaustion a critical failure condition.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "auto",
+          "spanNulls": false,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 58
+       },
+       "id": 23,
+       "options": {
+        "legend": {
+         "calcs": [],
+         "displayMode": "list",
+         "placement": "bottom",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "editorMode": "code",
+         "expr": "max(DCGM_FI_DEV_FB_USED{exported_namespace=\"$namespace\",exported_pod=\"$pod\"}) by (modelName, Hostname, gpu) \n/ \n(max(DCGM_FI_DEV_FB_USED{exported_namespace=\"$namespace\",exported_pod=\"$pod\"}) by (modelName, Hostname, gpu)  + max(DCGM_FI_DEV_FB_FREE{exported_namespace=\"$namespace\",exported_pod=\"$pod\"}) by (modelName, Hostname, gpu))",
+         "legendFormat": "{{modelName}} :: {{Hostname}} :: gpu{{gpu}} ",
+         "range": true,
+         "refId": "A"
+        }
+       ],
+       "title": "VRAM utilization",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": " Network data received by the pod in bytes per second. Sustained high rates may indicate large data transfers, streaming workloads, or distributed computation communication. Compare against network interface limits (typically 1-100 Gbps depending on infrastructure) to identify network bottlenecks.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "Bps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 65
+       },
+       "id": 6,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(irate(container_network_receive_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "Receive Bandwidth",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Network data sent by the pod in bytes per second. High transmit rates are common for services sending responses to many clients, distributed storage systems, or pods writing to network-attached storage. Asymmetric send/receive patterns help characterize workload behavior (e.g., download-heavy vs upload-heavy).",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "Bps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 65
+       },
+       "id": 7,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(container_network_transmit_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "Transmit Bandwidth",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": " Incoming network packet rate, useful for understanding connection patterns and overhead. High packet rates with low bandwidth suggest many small messages, while low packet rates with high bandwidth indicate large transfers. Network hardware has packet-per-second limits independent of bandwidth.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "pps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 72
+       },
+       "id": 8,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(container_network_receive_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "Rate of Received Packets",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Outgoing network packet rate, complementing bandwidth metrics. Comparing packet rates to bandwidth helps identify packet size distribution and potential inefficiencies like excessive connection churn or fragmented messages that could be batched for better performance.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "pps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 72
+       },
+       "id": 9,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(container_network_transmit_packets_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "Rate of Transmitted Packets",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Network packets dropped on receive, indicating congestion, buffer overflows, or network interface saturation. Any sustained drops suggest network capacity issues that will cause retransmissions, increased latency, and degraded application performance. Investigate network configuration, QoS policies, or pod resource contention.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "pps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 79
+       },
+       "id": 10,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(container_network_receive_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "Rate of Received Packets Dropped",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Packets dropped during transmission, signaling network path congestion or egress bandwidth saturation. For critical workloads, packet drops can cause connection timeouts, failed transactions, or degraded user experience. May indicate need for network policy adjustments or traffic shaping.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "pps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 79
+       },
+       "id": 11,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum(rate(container_network_transmit_packets_dropped_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])) by (pod)",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "Rate of Transmitted Packets Dropped",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Combined read and write I/O operations per second at the pod level, aggregated across all storage devices. High IOPS workloads (databases, random access patterns) stress storage differently than high-throughput workloads. Compare against storage system IOPS limits to identify bottlenecks.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "iops"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 86
+       },
+       "id": 12,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "ceil(sum by(pod) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])))",
+         "legendFormat": "Reads",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "ceil(sum by(pod) (rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\",namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval])))",
+         "legendFormat": "Writes",
+         "refId": "B"
+        }
+       ],
+       "title": "IOPS (Pod)",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Total data transfer rate (bytes/second) for read and write operations combined. High throughput with low IOPS suggests sequential access patterns (like video processing or large file operations), while low throughput with high IOPS indicates random access (like databases). Use this to match workloads to appropriate storage types.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "Bps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 86
+       },
+       "id": 13,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(pod) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
+         "legendFormat": "Reads",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(pod) (rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
+         "legendFormat": "Writes",
+         "refId": "B"
+        }
+       ],
+       "title": "ThroughPut (Pod)",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": " I/O operations per second broken down by individual containers, helping identify which containers are driving storage load. Useful for multi-container pods where one container (like a logging sidecar) might dominate I/O, or for understanding how application containers and init containers differ in storage access patterns.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "iops"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 93
+       },
+       "id": 14,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "ceil(sum by(container) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval])))",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "IOPS (Containers)",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Data transfer rates per container, revealing which containers are performing heavy data operations. Helps diagnose performance issues caused by storage contention between containers and informs decisions about volume sharing, storage class selection, or whether containers should be split across different pods.",
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "palette-classic"
+         },
+         "custom": {
+          "axisBorderShow": false,
+          "axisCenteredZero": false,
+          "axisColorMode": "text",
+          "axisLabel": "",
+          "axisPlacement": "auto",
+          "barAlignment": 0,
+          "barWidthFactor": 0.6,
+          "drawStyle": "line",
+          "fillOpacity": 10,
+          "gradientMode": "none",
+          "hideFrom": {
+           "legend": false,
+           "tooltip": false,
+           "viz": false
+          },
+          "insertNulls": false,
+          "lineInterpolation": "linear",
+          "lineWidth": 1,
+          "pointSize": 5,
+          "scaleDistribution": {
+           "type": "linear"
+          },
+          "showPoints": "never",
+          "spanNulls": true,
+          "stacking": {
+           "group": "A",
+           "mode": "none"
+          },
+          "thresholdsStyle": {
+           "mode": "off"
+          }
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         },
+         "unit": "Bps"
+        },
+        "overrides": []
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 93
+       },
+       "id": 15,
+       "interval": "1m",
+       "options": {
+        "legend": {
+         "asTable": true,
+         "calcs": [
+          "lastNotNull"
+         ],
+         "displayMode": "table",
+         "placement": "right",
+         "showLegend": true
+        },
+        "tooltip": {
+         "hideZeros": false,
+         "mode": "single",
+         "sort": "none"
+        }
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "legendFormat": "__auto",
+         "refId": "A"
+        }
+       ],
+       "title": "ThroughPut (Containers)",
+       "transparent": true,
+       "type": "timeseries"
+      },
+      {
+       "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+       },
+       "description": "Instant snapshot of all storage metrics per container, showing read vs write patterns separately and combined. The breakdown helps distinguish read-heavy workloads (like serving static content) from write-heavy ones (like logging or checkpointing). Use this to verify storage is performing as expected and to validate storage provisioning decisions.",
+       "fieldConfig": {
+        "defaults": {
+         "custom": {
+          "align": "auto",
+          "cellOptions": {
+           "type": "auto"
+          },
+          "inspect": false
+         },
+         "mappings": [],
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "green",
+            "value": 0
+           },
+           {
+            "color": "red",
+            "value": 80
+           }
+          ]
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byRegexp",
+           "options": "/IOPS/"
+          },
+          "properties": [
+           {
+            "id": "unit",
+            "value": "iops"
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byRegexp",
+           "options": "/Throughput/"
+          },
+          "properties": [
+           {
+            "id": "unit",
+            "value": "Bps"
+           }
+          ]
+         }
+        ]
+       },
+       "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 100
+       },
+       "id": 16,
+       "options": {
+        "cellHeight": "sm",
+        "footer": {
+         "countRows": false,
+         "fields": "",
+         "reducer": [
+          "sum"
+         ],
+         "show": false
+        },
+        "showHeader": true
+       },
+       "pluginVersion": "12.1.1",
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "format": "table",
+         "instant": true,
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\",device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "format": "table",
+         "instant": true,
+         "refId": "B"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_reads_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "format": "table",
+         "instant": true,
+         "refId": "C"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "format": "table",
+         "instant": true,
+         "refId": "D"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "format": "table",
+         "instant": true,
+         "refId": "E"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+         },
+         "expr": "sum by(container) (rate(container_fs_reads_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]) + rate(container_fs_writes_bytes_total{job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", device=~\"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)\", container!=\"\", cluster=\"$cluster\", namespace=\"$namespace\", pod=\"$pod\"}[$__rate_interval]))",
+         "format": "table",
+         "instant": true,
+         "refId": "F"
+        }
+       ],
+       "title": "Current Storage IO",
+       "transformations": [
+        {
+         "id": "joinByField",
+         "options": {
+          "byField": "container",
+          "mode": "outer"
+         }
+        },
+        {
+         "id": "organize",
+         "options": {
+          "excludeByName": {
+           "Time": true,
+           "Time 1": true,
+           "Time 2": true,
+           "Time 3": true,
+           "Time 4": true,
+           "Time 5": true,
+           "Time 6": true
+          },
+          "indexByName": {
+           "Time 1": 0,
+           "Time 2": 1,
+           "Time 3": 2,
+           "Time 4": 3,
+           "Time 5": 4,
+           "Time 6": 5,
+           "Value #A": 7,
+           "Value #B": 8,
+           "Value #C": 9,
+           "Value #D": 10,
+           "Value #E": 11,
+           "Value #F": 12,
+           "container": 6
+          },
+          "renameByName": {
+           "Value #A": "IOPS(Reads)",
+           "Value #B": "IOPS(Writes)",
+           "Value #C": "IOPS(Reads + Writes)",
+           "Value #D": "Throughput(Read)",
+           "Value #E": "Throughput(Write)",
+           "Value #F": "Throughput(Read + Write)",
+           "container": "Container"
+          }
+         }
+        }
+       ],
+       "type": "table"
+      }
+     ],
+     "preload": false,
+     "refresh": "10s",
+     "schemaVersion": 41,
+     "tags": [
+      "kubernetes-mixin"
+     ],
+     "templating": {
+      "list": [
+       {
+        "current": {
+         "text": "Prometheus",
+         "value": "prometheus"
+        },
+        "label": "Data source",
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+       },
+       {
+        "allValue": ".*",
+        "current": {
+         "text": "",
+         "value": ""
+        },
+        "datasource": {
+         "type": "prometheus",
+         "uid": "${datasource}"
+        },
+        "hide": 2,
+        "label": "cluster",
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(up{job=\"kube-state-metrics\"}, cluster)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+       },
+       {
+        "current": {
+         "text": "argocd",
+         "value": "argocd"
+        },
+        "datasource": {
+         "type": "prometheus",
+         "uid": "${datasource}"
+        },
+        "label": "namespace",
+        "name": "namespace",
+        "options": [],
+        "query": "label_values(kube_namespace_status_phase{job=\"kube-state-metrics\", cluster=\"$cluster\"}, namespace)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+       },
+       {
+        "current": {
+         "text": "argocd-application-controller-0",
+         "value": "argocd-application-controller-0"
+        },
+        "datasource": {
+         "type": "prometheus",
+         "uid": "${datasource}"
+        },
+        "label": "pod",
+        "name": "pod",
+        "options": [],
+        "query": "label_values(kube_pod_info{job=\"kube-state-metrics\", cluster=\"$cluster\", namespace=\"$namespace\"}, pod)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+       }
+      ]
+     },
+     "time": {
+      "from": "now-1h",
+      "to": "now"
+     },
+     "timepicker": {},
+     "timezone": "utc",
+     "title": "Exhaustive summary",
+     "uid": "pod-exhaustive-summary",
+     "version": 90
     }
