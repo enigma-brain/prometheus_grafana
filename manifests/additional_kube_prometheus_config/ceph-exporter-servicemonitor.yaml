@@ -1,0 +1,32 @@
+# CAVEAT: the cluster relabel replacement below hardcodes the Ceph fsid
+# (deb05f7d-...). If the Ceph cluster is ever rebuilt, the fsid changes and
+# this value must be updated to match `ceph fsid`.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Deliberately NOT named rook-ceph-exporter: the Rook operator owns that name
+  # and rewrites it on every reconcile (cluster label hardcoded to namespace,
+  # rook#9618). This copy is ours; Rook's rook-ceph-exporter SM has its
+  # release=prometheus label removed so Prometheus only scrapes this one.
+  name: ceph-exporter-fsid
+  namespace: rook-ceph
+  labels:
+    release: prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+      - rook-ceph
+  selector:
+    matchLabels:
+      app: rook-ceph-exporter
+      rook_cluster: rook-ceph
+  endpoints:
+    - port: ceph-exporter-http-metrics
+      path: /metrics
+      interval: 15s
+      # PLT-1900: Ceph-UI embedded Grafana panels and the provisioned Ceph
+      # dashboards expect cluster=<fsid>.
+      relabelings:
+        - action: replace
+          replacement: deb05f7d-66b1-49ce-8dd7-d20693c9c8c3
+          targetLabel: cluster
