@@ -3,6 +3,9 @@
 ### Quick notes
 - If you create a config map for dashboards that already exist and they have the same uids, the configmap will overwrite the existing ones
 - If you've provisioned an alert, you can no longer use those evaluation groups when making new alerts
+- The `data` key (the `*.json` filename) must be **unique across all dashboard ConfigMaps in the same Grafana folder**. The sidecar writes one file per data key per folder, so two ConfigMaps both using `dashboard1.json` silently overwrite each other and only one gets provisioned. Use `<configmap-name>.json`.
+- Since Grafana 12, the dashboard JSON's datasource variable must hold the datasource **uid** (`prometheus` here) — name-based lookup ("Prometheus") and the `"default"` pseudo-uid no longer resolve and every panel shows *No data*.
+- ConfigMaps larger than 256KiB (e.g. the ceph-mixin bundle) must be applied with `kubectl apply --server-side`.
 
 ## Dashboards
 
@@ -24,9 +27,11 @@ metadata:
   annotations:
     grafana_folder: "Test"
 data: 
-  dashboard1.json: |-
+  test-storage.json: |-
     YAML/JSON
 ```
+
+The data key must be unique within the Grafana folder (see Quick notes above) — name it after the ConfigMap.
 
 if you ever need to make adjustments, you can copy the JSON content and import as a new dashboard. **You'll have to change the UID**. Make the edits you need, export the JSON to your clipboard, and replace the content in the configmap.
 

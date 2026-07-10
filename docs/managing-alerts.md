@@ -42,6 +42,16 @@ spec:
 - The `kube-prometheus-stack` has many useful alerting rules
 - The website [Awesome Prometheus Alerts](https://samber.github.io/awesome-prometheus-alerts/) also has many useful rules
 
+## Ceph alert rules live in the rook repo
+
+Ceph alerting rules do **not** come from `manifests/promrules/` in this repo. The
+`prometheus-ceph-rules` PrometheusRule is created by the `rook-ceph-cluster` Helm
+chart in the `rook-ceph` namespace, and its lifecycle (the `release=prometheus`
+label and the `CephNodeRootFilesystemFull` removal patch) is managed from the rook
+repo as part of Rook upgrades. The `storage-rules.yaml` rules here contain no
+Ceph-capacity alerts — the rook-provided rules are the only Ceph alert coverage,
+so don't remove or duplicate them from this repo.
+
 # Alertmanager
 
 To configure AlertManager for slack integration, there is a config section in the Helm chart that details which alerts get sent to which slack channels, and a bot token is needed. This config section is too long to put here, but see a full example at [`manifests/alertmanager/config-test.yaml`](../manifests/alertmanager/config-test.yaml).
