@@ -74,6 +74,9 @@ grafana:
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
       cert-manager.io/cluster-issuer: "letsencrypt"
+      # Gate behind the enigmatic oauth2-proxy, same as prometheus/alertmanager
+      nginx.ingress.kubernetes.io/auth-url: "https://gate.enigmatic.stanford.edu/oauth2/auth"
+      nginx.ingress.kubernetes.io/auth-signin: "https://gate.enigmatic.stanford.edu/oauth2/start?rd=$scheme://$host$escaped_request_uri"
     hosts:
       - grafana.enigmatic.stanford.edu
     path: /
