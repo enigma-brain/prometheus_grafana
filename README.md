@@ -46,5 +46,6 @@ For detailed information on specific topics, see the documentation in the [docs]
 - **[Additional Configuration](docs/additional-configuration.md)** - Configure monitoring for specific Kubernetes components (kube-controller-manager, kube-scheduler, kube-proxy, etcd, NVIDIA DCGM exporter)
 - **[Managing Alerts](docs/managing-alerts.md)** - Create alert rules and set up Slack notifications
 - **[Dashboarding Workflow](docs/dashboards-and-alerts-workflow.md)** - Step-by-step workflow for creating and managing dashboards 
+- **[Ray Monitoring](docs/ray-monitoring.md)** - PodMonitors, the ray-exporter and the RayCluster dashboard across the ray, ray-test and ray-prod namespaces
 - **[Ingress Setup](docs/ingress-setup.md)** - Configure ingress for external access to Prometheus, Alertmanager, and Grafana GUIs
 - **[Troubleshooting](docs/troubleshooting.md)** - Advanced topics including changing the admin password, subfolder configuration, and deleting default dashboards
