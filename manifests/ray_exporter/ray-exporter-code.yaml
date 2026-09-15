@@ -91,6 +91,11 @@ data:
         "spikesort_gpu": "spike-sorting",
         "spikesort_cpu": "spike-sorting",
         "sync": "sync",
+        # The sync pipeline gained a GPU worker group for its saliency analysis, which
+        # requests `sync_gpu` so CPU tasks can never occupy a GPU node. A pipeline
+        # split across two groups needs BOTH resource names here -- exactly as
+        # spike-sorting does above -- or the tasks fall through to "other".
+        "sync_gpu": "sync",
     }
     _env_pm = os.environ.get("PIPELINE_MAP", "").strip()
     if _env_pm:
