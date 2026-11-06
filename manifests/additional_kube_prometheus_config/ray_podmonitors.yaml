@@ -16,6 +16,13 @@
 #
 # DASHBOARD: These enable the Ray Grafana dashboard to display cluster metrics
 # by ensuring Prometheus discovers and scrapes Ray pods with proper labels.
+#
+# NAMESPACES: Ray clusters live in three namespaces -- `ray` (the long-running
+# op-pipe/edi-etl clusters) plus `ray-test` and `ray-prod` (the per-environment
+# op-sync-*/op-spikesort-* clusters). Prometheus attaches a `namespace` label to
+# every sample, which the "RayCluster (preview)" dashboard uses as its top-level
+# $namespace variable. Add any new Ray namespace to BOTH namespaceSelectors
+# below or its metrics will not be collected at all.
 
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
@@ -28,7 +35,9 @@ spec:
   jobLabel: ray-head
   namespaceSelector:
     matchNames:
-      - ray  # Change from default to ray (where your clusters are)
+      - ray        # long-running shared clusters (op-pipe, edi-etl)
+      - ray-test   # op-sync-test-kuberay, op-spikesort-test-kuberay
+      - ray-prod   # op-sync-prod-kuberay, op-spikesort-prod-kuberay
   selector:
     matchLabels:
       ray.io/node-type: head
@@ -63,7 +72,9 @@ spec:
   jobLabel: ray-workers
   namespaceSelector:
     matchNames:
-      - ray  # Changed from default
+      - ray        # long-running shared clusters (op-pipe, edi-etl)
+      - ray-test   # op-sync-test-kuberay, op-spikesort-test-kuberay
+      - ray-prod   # op-sync-prod-kuberay, op-spikesort-prod-kuberay
   selector:
     matchLabels:
       ray.io/node-type: worker

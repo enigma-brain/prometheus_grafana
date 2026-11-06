@@ -1,0 +1,214 @@
+# ray-exporter -- KubeRay job/task metrics for the "RayCluster (preview)" dashboard
+#
+# PURPOSE: The PodMonitors in additional_kube_prometheus_config/ray_podmonitors.yaml
+# collect Ray's own node/resource metrics (ray_node_*, ray_resources, autoscaler_*).
+# They do NOT expose per-job reserved-vs-used or per-pipeline task counts, because
+# Ray publishes those only through the head's dashboard/state API, not its
+# Prometheus endpoint. This exporter polls that API and emits:
+#   ray_job_*                 per-job logical reservation vs physical usage
+#   ray_tasks_{running,requested,pending}          per op name
+#   ray_pipeline_tasks_{running,requested,pending} per pipeline
+#   ray_cluster_up / ray_exporter_namespace_up / ray_exporter_up
+#
+# NAMESPACES: one instance covers all Ray namespaces. RAY_NAMESPACE is a
+# comma-separated list and every emitted series carries a `namespace` label, which
+# is what the dashboard's $namespace variable filters on. To add a namespace:
+#   1. add it to RAY_NAMESPACE below,
+#   2. add a Role + RoleBinding for it (copy the ray-test block),
+#   3. add it to both namespaceSelectors in ray_podmonitors.yaml,
+#   4. kubectl rollout restart deploy/ray-exporter -n ray
+#
+# honorLabels: true on the ServiceMonitor is LOAD-BEARING. Without it Prometheus
+# overwrites the exporter's `namespace` label with the exporter pod's own namespace
+# and every Ray cluster is reported as living in `ray`.
+#
+# The exporter itself runs in `ray`; the ServiceAccount is granted read-only
+# access to Services in each Ray namespace via a RoleBinding there. It needs no
+# cluster-wide permissions.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ray-exporter
+  namespace: ray
+  labels:
+    app: ray-exporter
+---
+# Head-service discovery: list Services labelled ray.io/node-type=head. One
+# Role/RoleBinding pair per Ray namespace, all binding the single SA in `ray`.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ray-exporter
+  namespace: ray
+  labels:
+    app: ray-exporter
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ray-exporter
+  namespace: ray
+  labels:
+    app: ray-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ray-exporter
+subjects:
+  - kind: ServiceAccount
+    name: ray-exporter
+    namespace: ray
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ray-exporter
+  namespace: ray-test
+  labels:
+    app: ray-exporter
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ray-exporter
+  namespace: ray-test
+  labels:
+    app: ray-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ray-exporter
+subjects:
+  - kind: ServiceAccount
+    name: ray-exporter
+    namespace: ray
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ray-exporter
+  namespace: ray-prod
+  labels:
+    app: ray-exporter
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ray-exporter
+  namespace: ray-prod
+  labels:
+    app: ray-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ray-exporter
+subjects:
+  - kind: ServiceAccount
+    name: ray-exporter
+    namespace: ray
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ray-exporter
+  namespace: ray
+  labels:
+    app: ray-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ray-exporter
+  template:
+    metadata:
+      labels:
+        app: ray-exporter
+    spec:
+      serviceAccountName: ray-exporter
+      containers:
+        - name: exporter
+          image: python:3.12-slim
+          command: ["python", "/app/ray_exporter.py"]
+          env:
+            # Every namespace holding RayClusters. Each needs a Role/RoleBinding
+            # above and an entry in ray_podmonitors.yaml.
+            - name: RAY_NAMESPACE
+              value: "ray,ray-test,ray-prod"
+          ports:
+            - name: metrics
+              containerPort: 9402
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            # Scrapes fan out across every cluster in every namespace, so the
+            # probe timeout has to exceed the slowest full render.
+            timeoutSeconds: 25
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          volumeMounts:
+            - name: code
+              mountPath: /app
+      volumes:
+        - name: code
+          configMap:
+            name: ray-exporter-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ray-exporter
+  namespace: ray
+  labels:
+    app: ray-exporter
+spec:
+  type: ClusterIP
+  selector:
+    app: ray-exporter
+  ports:
+    - name: metrics
+      port: 9402
+      targetPort: metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ray-exporter
+  namespace: ray
+  labels:
+    release: prometheus  # matches the kube-prometheus-stack ServiceMonitor selector
+spec:
+  selector:
+    matchLabels:
+      app: ray-exporter
+  endpoints:
+    - port: metrics
+      path: /metrics
+      # One scrape polls every Ray head in every namespace, so keep the interval
+      # long and the timeout generous.
+      interval: 60s
+      scrapeTimeout: 30s
+      # REQUIRED: keeps the exporter's own `namespace` label (the Ray cluster's
+      # namespace) instead of letting Prometheus overwrite it with `ray`.
+      honorLabels: true

@@ -1,0 +1,418 @@
+# ray-exporter source (stdlib-only Python, mounted at /app by the Deployment in
+# ray-exporter.yaml). Edit this file, re-apply, then restart the Deployment:
+#
+#   kubectl apply -f manifests/ray_exporter/ray-exporter-code.yaml
+#   kubectl rollout restart deploy/ray-exporter -n ray
+#
+# The ConfigMap is volume-mounted, so a plain apply does NOT reload the running
+# process -- the restart is required.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ray-exporter-code
+  namespace: ray
+  labels:
+    app: ray-exporter
+data:
+  ray_exporter.py: |
+    #!/usr/bin/env python3
+    """Minimal stdlib-only Ray (KubeRay) -> Prometheus exporter.
+
+    The Ray analog of dstack_exporter.py. On each /metrics scrape it discovers the
+    Ray head services in every namespace listed in RAY_NAMESPACE (via the in-cluster
+    k8s API) and, per cluster, queries the Ray dashboard/state API to emit **per-job**
+    logical reservation vs physical usage. Ray autoscales the fleet to match what jobs
+    request, so "reserved as a % of the fleet" is meaningless here — what matters is,
+    of what each job reserved, how much is actually being used. That is exactly the
+    used-vs-reserved pairing these metrics expose.
+
+    Every series carries a `namespace` label naming the namespace its Ray cluster
+    lives in (`ray`, `ray-test`, `ray-prod`, ...). One exporter instance covers all
+    of them, so the ServiceMonitor MUST keep honorLabels: true — otherwise Prometheus
+    overwrites this label with the exporter pod's own namespace and every cluster
+    looks like it lives in `ray`.
+
+    Per (namespace, cluster, job_id) — labels namespace, cluster, job_id,
+    submission_id, entrypoint, status:
+      - ray_job_cpu_reserved        logical CPU cores held by the job's RUNNING tasks/actors
+      - ray_job_gpu_reserved        logical GPUs held by the job's RUNNING tasks/actors
+      - ray_job_mem_reserved_bytes  logical memory resource held (0 if the job requests none)
+      - ray_job_cpu_used            CPU cores physically used by the job's worker procs (Σ cpuPercent/100)
+      - ray_job_mem_used_bytes      RSS summed across the job's worker procs
+      - ray_job_gpu_used            GPU-equivalents physically used (Σ per-worker gpuUtilization/100)
+      - ray_job_gpu_mem_used_bytes  GPU memory used across the job's worker procs
+      - ray_job_tasks_running       RUNNING tasks/actors attributed to the job
+      - ray_job_workers             worker processes attributed to the job
+
+    Reserved comes from the task state API (`/api/v0/tasks`, each task's
+    required_resources + job_id). Used comes from per-node detail (`/nodes/<id>`),
+    whose worker entries carry jobId + cpuPercent/memoryInfo/gpuUtilization, so
+    physical usage is attributed to the owning job even when jobs share a node. Only
+    nodes hosting a job's RUNNING tasks are fetched, concurrently. Efficiency
+    (used/reserved) is computed in Grafana, not here.
+
+    Also emits ray_cluster_up{namespace,cluster} (1 if that head answered),
+    ray_exporter_namespace_up{namespace} (1 if head discovery in that namespace
+    succeeded) and ray_exporter_up (1 if discovery succeeded in every namespace).
+
+    Env:
+      RAY_NAMESPACE   comma-separated namespaces to discover head services in
+                      (default "ray"; e.g. "ray,ray-test,ray-prod"). The exporter's
+                      ServiceAccount needs services get/list in each one.
+      RAY_HEADS       optional static override, skips k8s discovery. Comma-separated
+                      "namespace/cluster=url" entries; a bare "cluster=url" is
+                      attributed to the first namespace in RAY_NAMESPACE
+                      (e.g. "ray/op-pipe-kuberay=http://op-pipe-kuberay-head-svc.ray.svc:8265")
+      DASHBOARD_PORT  head dashboard port when discovering (default 8265)
+      LISTEN_PORT     default 9402
+      STATE_LIMIT     max tasks pulled per cluster (default 10000)
+    """
+    import json, os, ssl, urllib.parse, urllib.request
+    from collections import defaultdict
+    from concurrent.futures import ThreadPoolExecutor
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    NAMESPACES = [n.strip() for n in os.environ.get("RAY_NAMESPACE", "ray").split(",") if n.strip()] or ["ray"]
+    DASH_PORT = os.environ.get("DASHBOARD_PORT", "8265")
+    PORT = int(os.environ.get("LISTEN_PORT", "9402"))
+    STATE_LIMIT = int(os.environ.get("STATE_LIMIT", "10000"))
+    # task/actor states that are actually HOLDING resources right now
+    LIVE = {"RUNNING"}
+    SA = "/var/run/secrets/kubernetes.io/serviceaccount"
+
+    # Attribute a task to a pipeline via the worker-group custom resource it requests.
+    # The op pipelines pin tasks to groups via rayStartParams resources: spikesort_gpu
+    # + spikesort_cpu (2 groups) = the spike-sorting pipeline, sync = the sync pipeline.
+    # This holds in all three namespaces -- in `ray` the groups live on one cluster
+    # (op-pipe-kuberay), in ray-test/ray-prod they are split across the op-spikesort-*
+    # and op-sync-* clusters, but the resource names are identical either way.
+    # Override with env PIPELINE_MAP="resourceName=pipeline,resourceName=pipeline".
+    PIPELINE_MAP = {
+        "spikesort_gpu": "spike-sorting",
+        "spikesort_cpu": "spike-sorting",
+        "sync": "sync",
+    }
+    _env_pm = os.environ.get("PIPELINE_MAP", "").strip()
+    if _env_pm:
+        PIPELINE_MAP = {}
+        for part in _env_pm.split(","):
+            if "=" in part:
+                k, v = part.split("=", 1)
+                PIPELINE_MAP[k.strip()] = v.strip()
+    # distinct pipeline labels, pre-seeded to 0 so idle pipelines still render a bar
+    PIPELINES = sorted(set(PIPELINE_MAP.values()))
+
+
+    def pipeline_of(req):
+        """Pipeline label for a task from its required_resources custom key."""
+        for k in (req or {}):
+            if k in PIPELINE_MAP:
+                return PIPELINE_MAP[k]
+        return "other"
+
+
+    def esc(v):
+        return str(v).replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+
+
+    def _num(v):
+        """Coerce Ray's occasionally list/dict-shaped worker gpu fields to a float."""
+        if v is None:
+            return 0.0
+        if isinstance(v, (int, float)):
+            return float(v)
+        if isinstance(v, list):
+            return sum(_num(x) for x in v)
+        if isinstance(v, dict):
+            return sum(_num(x) for x in v.values())
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return 0.0
+
+
+    def http_get(url, headers=None, timeout=25, ctx=None):
+        req = urllib.request.Request(url, headers=headers or {}, method="GET")
+        return json.load(urllib.request.urlopen(req, timeout=timeout, context=ctx))
+
+
+    # --- cluster discovery -----------------------------------------------------
+
+    def _static_heads():
+        """Parse RAY_HEADS into {(namespace, cluster): base_url}, or None if unset."""
+        static = os.environ.get("RAY_HEADS", "").strip()
+        if not static:
+            return None
+        out = {}
+        for part in static.split(","):
+            if "=" not in part:
+                continue
+            name, url = part.split("=", 1)
+            name = name.strip()
+            ns = NAMESPACES[0]
+            if "/" in name:
+                ns, name = name.split("/", 1)
+            out[(ns.strip(), name.strip())] = url.strip().rstrip("/")
+        return out
+
+
+    def _k8s_client():
+        """Return (api_host_port, auth_headers, ssl_context) for the in-cluster API."""
+        with open(SA + "/token") as f:
+            token = f.read().strip()
+        host = os.environ["KUBERNETES_SERVICE_HOST"]
+        port = os.environ.get("KUBERNETES_SERVICE_PORT_HTTPS", "443")
+        ctx = ssl.create_default_context(cafile=SA + "/ca.crt")
+        return "%s:%s" % (host, port), {"Authorization": "Bearer " + token}, ctx
+
+
+    def discover_heads_in(hostport, headers, ctx, namespace):
+        """Return {(namespace, cluster_name): base_url} for one namespace."""
+        url = "https://%s/api/v1/namespaces/%s/services?labelSelector=%s" % (
+            hostport, namespace,
+            urllib.parse.quote("ray.io/node-type=head"),
+        )
+        data = http_get(url, headers, ctx=ctx)
+        heads = {}
+        for svc in data.get("items", []):
+            name = (svc["metadata"].get("labels") or {}).get("ray.io/cluster") \
+                or svc["metadata"]["name"].replace("-head-svc", "")
+            svc_name = svc["metadata"]["name"]
+            # prefer the port literally named "dashboard"; else DASH_PORT
+            port_num = DASH_PORT
+            for p in svc["spec"].get("ports", []):
+                if p.get("name") == "dashboard":
+                    port_num = p["port"]
+                    break
+            heads[(namespace, name)] = "http://%s.%s.svc:%s" % (svc_name, namespace, port_num)
+        return heads
+
+
+    def discover_heads():
+        """Return ({(namespace, cluster): base_url}, {namespace: discovery_ok}).
+
+        A namespace whose lookup fails (RBAC gap, API blip) is reported as down
+        rather than taking the whole scrape with it -- one broken namespace must not
+        blank out the clusters in the others.
+        """
+        static = _static_heads()
+        if static is not None:
+            return static, {ns: 1 for ns in NAMESPACES}
+
+        hostport, headers, ctx = _k8s_client()
+        heads, ns_up = {}, {}
+        for ns in NAMESPACES:
+            try:
+                heads.update(discover_heads_in(hostport, headers, ctx, ns))
+                ns_up[ns] = 1
+            except Exception as e:  # noqa
+                print("discovery error in namespace %s: %s" % (ns, e), flush=True)
+                ns_up[ns] = 0
+        return heads, ns_up
+
+
+    # --- per-cluster scrape ----------------------------------------------------
+
+    def scrape_cluster(namespace, name, base):
+        """Return (ok, {job_id: {...}}, {op_name: running_count}) for one Ray cluster."""
+        jobs = defaultdict(lambda: {
+            "cpu_res": 0.0, "gpu_res": 0.0, "mem_res": 0.0,
+            "cpu_used": 0.0, "mem_used": 0.0, "gpu_used": 0.0, "gpu_mem_used": 0.0,
+            "tasks": 0, "workers": 0,
+            "status": "", "entrypoint": "", "submission_id": "",
+        })
+        # Per-op-name counts across the cluster: RUNNING only, and all non-terminal
+        # ("requested/live" = pending + running).
+        names = defaultdict(int)       # RUNNING          -> ray_tasks_running
+        req_names = defaultdict(int)   # non-terminal     -> ray_tasks_requested
+        # per-pipeline counts, pre-seeded to 0 so known-but-idle pipelines still emit
+        pipe_run = defaultdict(int, {p: 0 for p in PIPELINES})   # RUNNING      -> ray_pipeline_tasks_running
+        pipe_req = defaultdict(int, {p: 0 for p in PIPELINES})   # non-terminal -> ray_pipeline_tasks_requested
+        try:
+            # 1. reserved (logical) + node set, from the task/actor state API.
+            # Server-side filter to NON-TERMINAL tasks (state != FINISHED and != FAILED):
+            # Ray's REST API takes parallel filter_keys/filter_predicates/filter_values
+            # params, AND-ed (!%%3D == "!="). This keeps the pull tiny (in-flight tasks
+            # only, ~100s not ~1000s), slashing peak parse memory, while covering both
+            # the RUNNING set we score for reserved/used and the pending set for
+            # "requested". detail=1 so required_resources/node_id survive.
+            tasks = http_get(
+                "%s/api/v0/tasks?detail=1&limit=%d"
+                "&filter_keys=state&filter_predicates=!%%3D&filter_values=FINISHED"
+                "&filter_keys=state&filter_predicates=!%%3D&filter_values=FAILED"
+                % (base, STATE_LIMIT))
+            res = tasks.get("data", {}).get("result", {})
+            rows = res.get("result", []) or []
+            if res.get("num_after_truncation", 0) >= STATE_LIMIT:
+                print("cluster %s/%s: task list truncated at %d" % (namespace, name, STATE_LIMIT), flush=True)
+            active_nodes = set()
+            for r in rows:
+                nm = r.get("name")
+                req = r.get("required_resources") or {}
+                pipe = pipeline_of(req)
+                if nm:
+                    req_names[nm] += 1  # all pulled rows are non-terminal (requested/live)
+                pipe_req[pipe] += 1
+                if r.get("state") not in LIVE:
+                    continue
+                # --- RUNNING only below (reserved/used + running count) ---
+                pipe_run[pipe] += 1
+                jid = r.get("job_id")
+                j = jobs[jid]
+                j["tasks"] += 1
+                if nm:
+                    names[nm] += 1
+                j["cpu_res"] += _num(req.get("CPU"))
+                j["gpu_res"] += _num(req.get("GPU"))
+                j["mem_res"] += _num(req.get("memory"))
+                if r.get("node_id"):
+                    active_nodes.add(r["node_id"])
+
+            # 2. used (physical) — per-node detail, attributed by worker.jobId
+            def node_detail(nid):
+                try:
+                    d = http_get("%s/nodes/%s" % (base, nid))
+                    return d.get("data", {}).get("detail", {}).get("workers", []) or []
+                except Exception as e:  # noqa
+                    print("cluster %s/%s node %s error: %s" % (namespace, name, nid[:12], e), flush=True)
+                    return []
+
+            if active_nodes:
+                with ThreadPoolExecutor(max_workers=min(16, len(active_nodes))) as ex:
+                    for workers in ex.map(node_detail, active_nodes):
+                        for w in workers:
+                            jid = w.get("jobId")
+                            if jid not in jobs:
+                                continue  # worker of a job with no live tasks — skip
+                            j = jobs[jid]
+                            j["workers"] += 1
+                            j["cpu_used"] += _num(w.get("cpuPercent")) / 100.0
+                            j["mem_used"] += _num((w.get("memoryInfo") or {}).get("rss"))
+                            j["gpu_used"] += _num(w.get("gpuUtilization")) / 100.0
+                            j["gpu_mem_used"] += _num(w.get("gpuMemoryUsage"))
+
+            # 3. enrich with job metadata (status / entrypoint / submission id)
+            try:
+                meta = http_get("%s/api/jobs/" % base)
+                items = meta if isinstance(meta, list) else list(meta.values())
+                for m in items:
+                    jid = m.get("job_id")
+                    if jid in jobs:
+                        jobs[jid]["status"] = m.get("status") or ""
+                        jobs[jid]["entrypoint"] = (m.get("entrypoint") or "")[:120]
+                        jobs[jid]["submission_id"] = m.get("submission_id") or ""
+            except Exception as e:  # noqa
+                print("cluster %s/%s jobs meta error: %s" % (namespace, name, e), flush=True)
+
+            return True, jobs, names, req_names, dict(pipe_run), dict(pipe_req)
+        except Exception as e:  # noqa
+            print("cluster %s/%s scrape error: %s" % (namespace, name, e), flush=True)
+            return False, {}, {}, {}, {}, {}
+
+
+    # --- render ----------------------------------------------------------------
+
+    METRICS = [
+        ("ray_job_cpu_reserved", "cpu_res", "Logical CPU cores held by the job's RUNNING tasks/actors.", "%g"),
+        ("ray_job_gpu_reserved", "gpu_res", "Logical GPUs held by the job's RUNNING tasks/actors.", "%g"),
+        ("ray_job_mem_reserved_bytes", "mem_res", "Logical memory resource held by the job (0 if none requested).", "%g"),
+        ("ray_job_cpu_used", "cpu_used", "CPU cores physically used by the job's worker processes.", "%g"),
+        ("ray_job_mem_used_bytes", "mem_used", "Resident memory summed across the job's worker processes.", "%g"),
+        ("ray_job_gpu_used", "gpu_used", "GPU-equivalents physically used by the job (per-worker util summed).", "%g"),
+        ("ray_job_gpu_mem_used_bytes", "gpu_mem_used", "GPU memory used across the job's worker processes.", "%g"),
+        ("ray_job_tasks_running", "tasks", "RUNNING tasks/actors attributed to the job.", "%d"),
+        ("ray_job_workers", "workers", "Worker processes attributed to the job.", "%d"),
+    ]
+
+
+    def render():
+        lines = []
+        for mname, _, help_, _ in METRICS:
+            lines.append("# HELP %s %s" % (mname, help_))
+            lines.append("# TYPE %s gauge" % mname)
+        lines.append("# HELP ray_tasks_running RUNNING tasks/actors per op name (task `name`), from the State API.")
+        lines.append("# TYPE ray_tasks_running gauge")
+        lines.append("# HELP ray_tasks_requested Non-terminal (pending+running) tasks/actors per op name, from the State API.")
+        lines.append("# TYPE ray_tasks_requested gauge")
+        lines.append("# HELP ray_tasks_pending Pending (non-terminal, not yet RUNNING) tasks/actors per op name.")
+        lines.append("# TYPE ray_tasks_pending gauge")
+        lines.append("# HELP ray_pipeline_tasks_running RUNNING tasks per pipeline (from the worker-group custom resource).")
+        lines.append("# TYPE ray_pipeline_tasks_running gauge")
+        lines.append("# HELP ray_pipeline_tasks_requested Non-terminal (pending+running) tasks per pipeline.")
+        lines.append("# TYPE ray_pipeline_tasks_requested gauge")
+        lines.append("# HELP ray_pipeline_tasks_pending Pending (non-terminal, not yet RUNNING) tasks per pipeline.")
+        lines.append("# TYPE ray_pipeline_tasks_pending gauge")
+        lines.append("# HELP ray_cluster_up 1 if the Ray cluster's dashboard answered this scrape.")
+        lines.append("# TYPE ray_cluster_up gauge")
+        lines.append("# HELP ray_exporter_namespace_up 1 if head discovery succeeded in that namespace this scrape.")
+        lines.append("# TYPE ray_exporter_namespace_up gauge")
+        lines.append("# HELP ray_exporter_up 1 if head discovery succeeded in every configured namespace.")
+        lines.append("# TYPE ray_exporter_up gauge")
+
+        body, cluster_up = [], []
+        try:
+            heads, ns_up = discover_heads()
+        except Exception as e:  # noqa
+            print("discovery error:", e, flush=True)
+            heads, ns_up = {}, {ns: 0 for ns in NAMESPACES}
+
+        if heads:
+            with ThreadPoolExecutor(max_workers=min(8, len(heads))) as ex:
+                results = list(ex.map(lambda kv: (kv[0][0], kv[0][1], *scrape_cluster(kv[0][0], kv[0][1], kv[1])),
+                                      heads.items()))
+        else:
+            results = []
+
+        for ns, name, ok, jobs, names, req_names, pipe_run, pipe_req in results:
+            nsl = 'namespace="%s",cluster="%s"' % (esc(ns), esc(name))
+            cluster_up.append('ray_cluster_up{%s} %d' % (nsl, 1 if ok else 0))
+            for jid, j in jobs.items():
+                lbl = '%s,job_id="%s",submission_id="%s",entrypoint="%s",status="%s"' % (
+                    nsl, esc(jid), esc(j["submission_id"]),
+                    esc(j["entrypoint"]), esc(j["status"]),
+                )
+                for mname, key, _, fmt in METRICS:
+                    body.append(("%s{%s} " + fmt) % (mname, lbl, j[key]))
+            for nm, cnt in names.items():
+                body.append('ray_tasks_running{%s,name="%s"} %d' % (nsl, esc(nm), cnt))
+            for nm, cnt in req_names.items():
+                body.append('ray_tasks_requested{%s,name="%s"} %d' % (nsl, esc(nm), cnt))
+                pend = cnt - names.get(nm, 0)
+                body.append('ray_tasks_pending{%s,name="%s"} %d' % (
+                    nsl, esc(nm), pend if pend > 0 else 0))
+            for pl, cnt in pipe_run.items():
+                body.append('ray_pipeline_tasks_running{%s,pipeline="%s"} %d' % (nsl, esc(pl), cnt))
+            for pl, cnt in pipe_req.items():
+                body.append('ray_pipeline_tasks_requested{%s,pipeline="%s"} %d' % (nsl, esc(pl), cnt))
+                pend = cnt - pipe_run.get(pl, 0)
+                body.append('ray_pipeline_tasks_pending{%s,pipeline="%s"} %d' % (
+                    nsl, esc(pl), pend if pend > 0 else 0))
+
+        for ns in NAMESPACES:
+            cluster_up.append('ray_exporter_namespace_up{namespace="%s"} %d' % (esc(ns), ns_up.get(ns, 0)))
+        up = 1 if ns_up and all(ns_up.get(ns, 0) for ns in NAMESPACES) else 0
+
+        return "\n".join(lines + body + cluster_up + ["ray_exporter_up %d" % up, ""]) + "\n"
+
+
+    class H(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path.startswith("/metrics"):
+                out = render().encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain; version=0.0.4")
+                self.send_header("Content-Length", str(len(out)))
+                self.end_headers()
+                self.wfile.write(out)
+            else:
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b"ray-exporter\n")
+
+        def log_message(self, *a):  # quiet
+            pass
+
+
+    if __name__ == "__main__":
+        print("ray-exporter on :%d (ns=%s)" % (PORT, ",".join(NAMESPACES)), flush=True)
+        HTTPServer(("0.0.0.0", PORT), H).serve_forever()
