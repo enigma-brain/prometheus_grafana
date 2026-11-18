@@ -1030,17 +1030,17 @@ data:
       ],
       "schemaVersion": 39,
       "version": 3,
-      "refresh": "30s",
+      "refresh": "",
       "time": {
-        "from": "2026-11-12T22:00:00.000Z",
-        "to": "now"
+        "from": "2026-11-12T20:00:00.000Z",
+        "to": "2026-11-19T20:00:00.000Z"
       },
       "templating": {
         "list": [
           {
             "type": "textbox",
             "name": "contract_cost",
-            "label": "DigitalOcean contract cost ($ total)",
+            "label": "Mithril H200 contract cost ($ total)",
             "query": "0",
             "current": {
               "selected": false,
@@ -1058,7 +1058,7 @@ data:
           {
             "type": "textbox",
             "name": "contract_days",
-            "label": "DigitalOcean contract length (days)",
+            "label": "Mithril H200 contract length (days)",
             "query": "7",
             "current": {
               "text": "7",
@@ -1129,7 +1129,7 @@ data:
               "expr": "vector($contract_cost)"
             }
           ],
-          "description": "Enter the contract's total cost and its length in days (from its date range); all panels derive the daily rate as cost / days. CPU / memory on Mithril come from cAdvisor's root cgroup (container_*{id=\"/\"}), not node-exporter (it never ran on the pool); memory = working set, close to but not identical to DO's MemAvailable figure."
+          "description": "Enter the contract's total cost and its length in days (from its date range); all panels derive the daily rate as cost / days."
         },
         {
           "id": 2,
@@ -1368,7 +1368,7 @@ data:
               "expr": "(($contract_cost / $contract_days) * $__range_s / 86400) * avg(DCGM_FI_DEV_GPU_UTIL{fleet=\"mithril-h200\"}) / 100"
             }
           ],
-          "description": "Spend weighted by fleet-average GPU utilization (NVML occupancy — upper bound on useful work). CPU / memory on Mithril come from cAdvisor's root cgroup (container_*{id=\"/\"}), not node-exporter (it never ran on the pool); memory = working set, close to but not identical to DO's MemAvailable figure."
+          "description": "Spend weighted by fleet-average GPU utilization (NVML occupancy — upper bound on useful work)."
         },
         {
           "id": 7,
@@ -1413,7 +1413,7 @@ data:
               "expr": "(($contract_cost / $contract_days) * $__range_s / 86400) * (100 - avg(DCGM_FI_DEV_GPU_UTIL{fleet=\"mithril-h200\"})) / 100"
             }
           ],
-          "description": "Spend attributed to GPUs sitting idle over the selected range. CPU / memory on Mithril come from cAdvisor's root cgroup (container_*{id=\"/\"}), not node-exporter (it never ran on the pool); memory = working set, close to but not identical to DO's MemAvailable figure."
+          "description": "Spend attributed to GPUs sitting idle over the selected range."
         },
         {
           "id": 8,
